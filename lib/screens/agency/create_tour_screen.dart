@@ -138,10 +138,20 @@ class _CreateTourScreenState extends State<CreateTourScreen> {
   }
 
   Future<void> _selectDate(bool isStart) async {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    // If existing tour has a past date, we must use today as initialDate
+    // because showDatePicker requires initialDate >= firstDate
+    DateTime initial = isStart ? _startDate : _endDate;
+    if (initial.isBefore(today)) {
+      initial = today;
+    }
+
     final picked = await showDatePicker(
       context: context,
-      initialDate: isStart ? _startDate : _endDate,
-      firstDate: DateTime.now(),
+      initialDate: initial,
+      firstDate: today,
       lastDate: DateTime.now().add(const Duration(days: 365 * 2)),
       builder: (context, child) => Theme(
         data: Theme.of(context).copyWith(
@@ -169,6 +179,21 @@ class _CreateTourScreenState extends State<CreateTourScreen> {
 
   Future<void> _saveTour() async {
     if (!_formKey.currentState!.validate()) return;
+
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    // Validation for future dates
+    if (_startDate.isBefore(today)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Start date cannot be in the past'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     final user = context.read<AuthProvider>().user;
     if (user == null) return;
 
