@@ -54,6 +54,8 @@ class ReviewService {
         'rating': rating,
         'comment': comment,
         'updatedAt': Timestamp.now(),
+        'isApproved': true, // Auto-approve updates as well
+        'rejectionReason': null, // Clear any previous rejection
       });
     } else {
       // Create new
@@ -68,13 +70,13 @@ class ReviewService {
         'comment': comment,
         'createdAt': Timestamp.now(),
         'updatedAt': Timestamp.now(),
-        'isApproved': false, // Default to pending
+        'isApproved': true, // Auto-approve for immediate visibility
         'rejectionReason': null, // Ensure explicit null
       });
     }
 
-    // Note: Do NOT update tour/agency averageRating yet
-    // Only update after admin approves the review
+    // Update aggregates immediately since we are auto-approving
+    await _updateAggregates(booking.tourId, booking.agencyId);
   }
 
   /// Aggregation logic

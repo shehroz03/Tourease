@@ -374,6 +374,34 @@ class _AgencyBookingCard extends StatelessWidget {
     BookingService service,
     String action,
   ) async {
+    if (action == 'completed') {
+      final confirm = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Complete Tour?'),
+          content: const Text(
+            'This will mark the tour as completed for this booking and allow the traveler to write a review. This action cannot be undone.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context, true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Confirm Complete'),
+            ),
+          ],
+        ),
+      );
+
+      if (confirm != true) return;
+    }
+
     try {
       String message = '';
       if (action == 'confirmed') {
