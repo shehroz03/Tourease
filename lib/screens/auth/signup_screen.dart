@@ -162,10 +162,12 @@ class _SignupScreenState extends State<SignupScreen> {
                                   Icons.email_outlined,
                                 ),
                                 validator: (value) {
-                                  if (value?.isEmpty ?? true)
+                                  if (value?.isEmpty ?? true) {
                                     return 'Please enter your email';
-                                  if (!value!.contains('@'))
+                                  }
+                                  if (!value!.contains('@')) {
                                     return 'Please enter a valid email';
+                                  }
                                   return null;
                                 },
                               ),
