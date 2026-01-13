@@ -1,0 +1,161 @@
+You are a senior Flutter engineer with deep experience in Firebase (Auth + Firestore) and Cloudinary.
+
+Goal:
+Build a Flutter version of my tour booking app (similar to my existing React Native “TourEase” app) with:
+- Role-based access (traveler, agency, admin)
+- Firebase email/password auth + Firestore data store
+- Cloudinary for all images/documents (NO Firebase Storage)
+
+### Tech Stack
+
+- Flutter 3.x
+- State management: choose a simple scalable option (e.g., Riverpod/Provider/Bloc) and be consistent.
+- Routing: go_router or Navigator 2.0.
+- Backend:
+  - Firebase Authentication (email/password)
+  - Cloud Firestore (main datastore)
+- Media uploads:
+  - Cloudinary (unsigned upload preset)
+  - Cloud name: `dua4n3gr9`
+  - Upload preset name: `flutter`
+  - Cloudinary API key: `276347998746349`
+  - Use HTTPS secure upload endpoint.
+
+### Firebase Configuration (use this project)
+
+Use these values in FlutterFire setup and configuration:
+
+const firebaseConfig = {
+apiKey: "AIzaSyC4s9MGS9XULPQNCJkxI_O16Py6sv4dgm0",
+authDomain: "flutter-ccc75.firebaseapp.com",
+projectId: "flutter-ccc75",
+storageBucket: "flutter-ccc75.firebasestorage.app",
+messagingSenderId: "69971331728",
+appId: "1:69971331728:fd4d2f25903861aba615",
+measurementId: "G-CWGJBTQFQ1"
+};
+
+text
+
+In Flutter, configure this project via `flutterfire configure` or manual `FirebaseOptions`.
+
+Use:
+- Firestore as primary database for users, tours, bookings, chats.
+- Firebase Auth (email/password) for authentication.
+- Do NOT use Firebase Storage for uploads in this app; use Cloudinary instead.
+
+### Roles & User Model
+
+There are three roles:
+
+- `traveler`
+- `agency`
+- `admin`
+
+`users` collection document:
+
+- `id` (auth UID)
+- `email`
+- `name`
+- `role`: "traveler" | "agency" | "admin"
+- `verified`: bool (for agencies)
+- `status`: "pending" | "verified" | "rejected"
+- `verificationDocuments`: List<String> (Cloudinary URLs)
+- `rejectionReason`: String? (optional)
+- Audit fields: `approvedBy`, `approvedAt`
+- Timestamps: `createdAt`, `updatedAt`
+
+Rules:
+
+- New traveler:
+  - `role = "traveler"`, treated as verified.
+- New agency:
+  - `role = "agency"`, `verified = false`, `status = "pending"`, `verificationDocuments = []`.
+- Admin:
+  - Created manually in Firestore (`role = "admin"`, `verified = true`).
+
+### Navigation / Access Logic
+
+Implement role-based routing:
+
+- If user not logged in → Auth flow (login, signup with role selection).
+- If logged in:
+  - `role == "admin"` → Admin tab layout (Dashboard, Agencies, Tours, Settings).
+  - `role == "agency"`:
+    - If `!verified` OR `status` in ["pending", "rejected"] → `VerificationPendingScreen` (with upload docs).
+    - Else → full Agency tab layout (Dashboard, Tours, Bookings, Chats, Settings).
+  - `role == "traveler"` → Traveler tab layout (Home, Search, My Bookings, Chats, Profile).
+
+### Core Features (match existing RN app)
+
+1. Traveler features
+   - Browse tours (list + detail).
+   - Search & filter (destination, date range, price, category).
+   - Book tours → create `bookings` document (tourId, travelerId, agencyId, status, totalPrice, createdAt).
+   - “My Bookings” list + details.
+   - Real-time chat with agencies using Firestore (see chat section below).
+
+2. Agency features
+   - Dashboard with high-level stats (total tours, active bookings, pending bookings).
+   - Create/Edit tours:
+     - Title, description, location, start/end dates, price, category, seats, status.
+     - Cover image upload to Cloudinary.
+   - View bookings for own tours.
+   - Chat with travelers.
+   - VerificationPendingScreen:
+     - If no `verificationDocuments` or `status == "rejected"`, show upload UI.
+     - Pick multiple images, upload to Cloudinary folder `agency_verification/{userId}`, save URLs to Firestore.
+     - Reset `status` to `"pending"` on re‑submit.
+     - Show `rejectionReason` for rejected.
+
+3. Admin features
+   - Admin Dashboard:
+     - Total users, total agencies.
+     - Pending vs verified agencies.
+     - Total tours.
+   - Agency Management screen:
+     - Tabs: Pending, Verified, Rejected.
+     - Approve / Reject / Revoke agencies:
+       - Approve: `verified = true`, `status = "verified"`, set `approvedBy`, `approvedAt`.
+       - Reject: `verified = false`, `status = "rejected"`, set `rejectionReason`.
+   - Basic Settings / About screen (version, app info).
+
+4. Firestore Chat (Traveler ↔ Agency)
+
+Collections:
+
+- `chats`:
+  - `id`
+  - `tourId`
+  - `travelerId`
+  - `agencyId`
+  - `lastMessage`
+  - `updatedAt`
+- `chats/{chatId}/messages`:
+  - `id`
+  - `senderId`
+  - `text`
+  - `createdAt`
+
+Functions:
+
+- `getOrCreateChat(travelerId, agencyId, tourId)`
+- `sendMessage(chatId, senderId, text)`
+- `streamMessages(chatId)` → real-time Stream for Flutter UI.
+- `streamUserChats(userId, role)` → list of chats for traveler/agency.
+
+Use Firestore snapshots to drive real-time chat UI.
+
+### Cloudinary Integration (Flutter)
+
+Create `lib/services/cloudinary_service.dart`:
+
+- Read from env/config:
+  - `cloudName = "dua4n3gr9"`
+  - `uploadPreset = "flutter"`
+- Provide function:
+
+Future<String> uploadToCloudinary({
+required String filePath,
+required String folder, // e.g. "agency_verification/{userId}", "tours/{tourId}", "avatars/{userId}"
+});
