@@ -229,10 +229,12 @@ class _BookingCard extends StatelessWidget {
         }
 
         return Card(
-          elevation: 3,
-          margin: const EdgeInsets.only(bottom: 16),
+          elevation: 8,
+          shadowColor: Colors.black12,
+          margin: const EdgeInsets.only(bottom: 20),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(24),
+            side: BorderSide(color: Colors.grey.withValues(alpha: 0.1)),
           ),
           clipBehavior: Clip.antiAlias,
           child: Column(

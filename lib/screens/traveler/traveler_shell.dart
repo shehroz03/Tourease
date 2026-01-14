@@ -95,32 +95,37 @@ class _TravelerShellState extends State<TravelerShell> {
           ],
         ),
         bottomNavigationBar: NavigationBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          height: 65,
+          indicatorColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
           selectedIndex: _calculateSelectedIndex(context),
           onDestinationSelected: (index) => _onItemTapped(index, context),
           destinations: const [
             NavigationDestination(
               icon: Icon(Icons.home_outlined),
-              selectedIcon: Icon(Icons.home),
+              selectedIcon: Icon(Icons.home, color: Color(0xFF00BFA5)),
               label: 'Home',
             ),
             NavigationDestination(
               icon: Icon(Icons.search_outlined),
-              selectedIcon: Icon(Icons.search),
+              selectedIcon: Icon(Icons.search, color: Color(0xFF00BFA5)),
               label: 'Search',
             ),
             NavigationDestination(
               icon: Icon(Icons.bookmark_outline),
-              selectedIcon: Icon(Icons.bookmark),
+              selectedIcon: Icon(Icons.bookmark, color: Color(0xFF00BFA5)),
               label: 'Bookings',
             ),
             NavigationDestination(
               icon: Icon(Icons.chat_outlined),
-              selectedIcon: Icon(Icons.chat),
+              selectedIcon: Icon(Icons.chat, color: Color(0xFF00BFA5)),
               label: 'Chats',
             ),
             NavigationDestination(
               icon: Icon(Icons.person_outlined),
-              selectedIcon: Icon(Icons.person),
+              selectedIcon: Icon(Icons.person, color: Color(0xFF00BFA5)),
               label: 'Profile',
             ),
           ],
