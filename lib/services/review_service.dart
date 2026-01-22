@@ -54,7 +54,7 @@ class ReviewService {
         'rating': rating,
         'comment': comment,
         'updatedAt': Timestamp.now(),
-        'isApproved': true, // Auto-approve updates as well
+        'isApproved': false, // Set to pending for moderation
         'rejectionReason': null, // Clear any previous rejection
       });
     } else {
@@ -70,13 +70,32 @@ class ReviewService {
         'comment': comment,
         'createdAt': Timestamp.now(),
         'updatedAt': Timestamp.now(),
-        'isApproved': true, // Auto-approve for immediate visibility
+        'isApproved': false, // Set to pending for admin moderation
         'rejectionReason': null, // Ensure explicit null
       });
     }
 
-    // Update aggregates immediately since we are auto-approving
-    await _updateAggregates(booking.tourId, booking.agencyId);
+    // Don't update aggregates until review is approved by admin
+    // await _updateAggregates(booking.tourId, booking.agencyId);
+  }
+
+  /// Update review content (Admin action)
+  Future<void> updateReview(String reviewId, int rating, String comment) async {
+    final doc = await _reviewsCollection.doc(reviewId).get();
+    if (!doc.exists) return;
+
+    final review = ReviewModel.fromFirestore(doc);
+
+    await _reviewsCollection.doc(reviewId).update({
+      'rating': rating,
+      'comment': comment,
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
+
+    // Update aggregates if review is approved
+    if (review.isApproved) {
+      await _updateAggregates(review.tourId, review.agencyId);
+    }
   }
 
   /// Aggregation logic
@@ -90,7 +109,19 @@ class ReviewService {
     if (tourReviewsSnapshot.docs.isNotEmpty) {
       final reviews = tourReviewsSnapshot.docs
           .map((doc) => doc.data() as Map<String, dynamic>)
+          .where(
+            (r) => !(r['isHidden'] as bool? ?? false),
+          ) // Exclude hidden reviews
           .toList();
+
+      if (reviews.isEmpty) {
+        // No visible reviews, set default aggregates
+        await _firestore.collection('tours').doc(tourId).update({
+          'averageRating': 0,
+          'reviewCount': 0,
+        });
+        return;
+      }
 
       final int count = reviews.length;
       final double totalRating = reviews.fold(
@@ -114,7 +145,19 @@ class ReviewService {
     if (agencyReviewsSnapshot.docs.isNotEmpty) {
       final reviews = agencyReviewsSnapshot.docs
           .map((doc) => doc.data() as Map<String, dynamic>)
+          .where(
+            (r) => !(r['isHidden'] as bool? ?? false),
+          ) // Exclude hidden reviews
           .toList();
+
+      if (reviews.isEmpty) {
+        // No visible reviews, set default aggregates
+        await _firestore.collection('users').doc(agencyId).update({
+          'averageRating': 0,
+          'reviewCount': 0,
+        });
+        return;
+      }
 
       final int count = reviews.length;
       final double totalRating = reviews.fold(
@@ -206,18 +249,6 @@ class ReviewService {
     });
   }
 
-  /// Delete a review (Admin action)
-  Future<void> deleteReview(String reviewId) async {
-    final doc = await _reviewsCollection.doc(reviewId).get();
-    if (!doc.exists) return;
-
-    final review = ReviewModel.fromFirestore(doc);
-    await _reviewsCollection.doc(reviewId).delete();
-
-    // Re-calculate aggregates
-    await _updateAggregates(review.tourId, review.agencyId);
-  }
-
   /// Stream reported reviews
   Stream<List<ReviewModel>> streamReportedReviews() {
     return _reviewsCollection
@@ -299,10 +330,57 @@ class ReviewService {
     }
   }
 
+  /// Hide a review (Admin action - removes from all views)
+  Future<void> hideReview(String reviewId) async {
+    await _reviewsCollection.doc(reviewId).update({
+      'isHidden': true,
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
+
+    // Update aggregates if this was an approved review
+    final doc = await _reviewsCollection.doc(reviewId).get();
+    if (doc.exists) {
+      final review = ReviewModel.fromFirestore(doc);
+      if (review.isApproved) {
+        await _updateAggregates(review.tourId, review.agencyId);
+      }
+    }
+  }
+
+  /// Unhide a review (Admin action)
+  Future<void> unhideReview(String reviewId) async {
+    await _reviewsCollection.doc(reviewId).update({
+      'isHidden': false,
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
+
+    // Update aggregates if this was an approved review
+    final doc = await _reviewsCollection.doc(reviewId).get();
+    if (doc.exists) {
+      final review = ReviewModel.fromFirestore(doc);
+      if (review.isApproved) {
+        await _updateAggregates(review.tourId, review.agencyId);
+      }
+    }
+  }
+
+  /// Delete a review permanently (Admin action)
+  Future<void> deleteReview(String reviewId) async {
+    final doc = await _reviewsCollection.doc(reviewId).get();
+    if (doc.exists) {
+      final review = ReviewModel.fromFirestore(doc);
+      // Delete the document
+      await _reviewsCollection.doc(reviewId).delete();
+      // Update aggregates
+      await _updateAggregates(review.tourId, review.agencyId);
+    }
+  }
+
   /// Stream all approved reviews globally (for Recent Activity)
   Stream<List<ReviewModel>> streamAllReviews({int limit = 10}) {
     return _reviewsCollection
         .where('isApproved', isEqualTo: true)
+        .where('isHidden', isEqualTo: false)
         .limit(limit)
         .snapshots()
         .map((snapshot) {

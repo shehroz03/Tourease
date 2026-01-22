@@ -17,6 +17,7 @@ class ReviewModel {
   final String? reportReason;
   final DateTime? reportedAt;
   final String? rejectionReason; // NEW
+  final bool isHidden; // NEW - Admin can hide reviews
 
   ReviewModel({
     required this.id,
@@ -35,6 +36,7 @@ class ReviewModel {
     this.reportReason,
     this.reportedAt,
     this.rejectionReason, // NEW
+    this.isHidden = false, // NEW - Default: not hidden
   });
 
   factory ReviewModel.fromFirestore(DocumentSnapshot doc) {
@@ -58,6 +60,7 @@ class ReviewModel {
           ? (data['reportedAt'] as Timestamp).toDate()
           : null,
       rejectionReason: data['rejectionReason'], // NEW
+      isHidden: data['isHidden'] ?? false, // NEW
     );
   }
 
@@ -78,6 +81,7 @@ class ReviewModel {
       'reportReason': reportReason,
       'reportedAt': reportedAt != null ? Timestamp.fromDate(reportedAt!) : null,
       'rejectionReason': rejectionReason, // NEW
+      'isHidden': isHidden, // NEW
     };
   }
 

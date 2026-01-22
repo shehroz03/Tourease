@@ -359,7 +359,7 @@ class _AgencyDashboardState extends State<AgencyDashboard> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          '\$${earnings.availableBalance.toStringAsFixed(2)}',
+                          'Rs. ${earnings.availableBalance.toStringAsFixed(2)}',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 32,
@@ -388,7 +388,7 @@ class _AgencyDashboardState extends State<AgencyDashboard> {
                       fontWeight: FontWeight.bold,
                     ),
                     decoration: InputDecoration(
-                      prefixText: '\$ ',
+                      prefixText: 'Rs. ',
                       hintText: '0.00',
                       filled: true,
                       fillColor: Colors.grey[100],
@@ -851,7 +851,7 @@ class _AgencyDashboardState extends State<AgencyDashboard> {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
-                          '\$${tour.price.toStringAsFixed(0)}',
+                          'Rs. ${tour.price.toStringAsFixed(0)}',
                           style: TextStyle(
                             color: theme.colorScheme.primary,
                             fontWeight: FontWeight.bold,
@@ -961,7 +961,7 @@ class _AgencyEarningsCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            '\$${totalEarnings.toStringAsFixed(2)}',
+            'Rs. ${totalEarnings.toStringAsFixed(2)}',
             style: const TextStyle(
               color: Colors.white,
               fontSize: 32,
@@ -981,7 +981,7 @@ class _AgencyEarningsCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '\$${available.toStringAsFixed(2)}',
+                      'Rs. ${available.toStringAsFixed(2)}',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
@@ -1003,7 +1003,7 @@ class _AgencyEarningsCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '\$${withdrawn.toStringAsFixed(2)}',
+                      'Rs. ${withdrawn.toStringAsFixed(2)}',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,

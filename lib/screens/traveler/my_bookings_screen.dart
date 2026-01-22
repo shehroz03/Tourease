@@ -201,6 +201,7 @@ class _BookingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final now = DateTime.now();
     final tourService = TourService();
     final reviewService = ReviewService();
 
@@ -329,7 +330,7 @@ class _BookingCard extends StatelessWidget {
                           ],
                         ),
                         Text(
-                          '\$${booking.totalPrice.toStringAsFixed(0)}',
+                          'Rs. ${booking.totalPrice.toStringAsFixed(0)}',
                           style: Theme.of(context).textTheme.titleMedium
                               ?.copyWith(
                                 fontWeight: FontWeight.bold,
@@ -421,8 +422,10 @@ class _BookingCard extends StatelessWidget {
                           ),
                         ],
                       ),
-                    ] else if (booking.status == BookingStatus.completed) ...[
-                      // Review button for completed bookings
+                    ] else if (booking.status == BookingStatus.completed ||
+                        (booking.status == BookingStatus.confirmed &&
+                            tour.endDate.isBefore(now))) ...[
+                      // Review button for completed or finished bookings
                       FutureBuilder<ReviewModel?>(
                         future: reviewService.getReviewForBooking(
                           booking.id,

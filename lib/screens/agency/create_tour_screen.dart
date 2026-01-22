@@ -510,7 +510,7 @@ class _CreateTourScreenState extends State<CreateTourScreen> {
               Expanded(
                 child: _buildTextField(
                   _priceController,
-                  'Price (\$)',
+                  'Price (PKR)',
                   Icons.attach_money,
                   isNumber: true,
                 ),

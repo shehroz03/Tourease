@@ -235,7 +235,7 @@ class _SuccessStoryScreenState extends State<SuccessStoryScreen> {
                             ),
                             const Spacer(),
                             Text(
-                              '\$${_tour!.price.toStringAsFixed(0)}',
+                              'Rs. ${_tour!.price.toStringAsFixed(0)}',
                               style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,

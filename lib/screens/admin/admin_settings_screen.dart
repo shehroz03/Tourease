@@ -245,7 +245,7 @@ class AdminSettingsScreen extends StatelessWidget {
 
     if (confirmed == true && context.mounted) {
       await auth.signOut();
-      if (context.mounted) context.go('/admin/login');
+      if (context.mounted) context.replace('/admin/login');
     }
   }
 }

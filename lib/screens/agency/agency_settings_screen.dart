@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
 import 'edit_profile_screen.dart';
 import 'agency_notifications_screen.dart';
@@ -221,7 +222,12 @@ class AgencySettingsScreen extends StatelessWidget {
                   ],
                 ),
               );
-              if (confirmed == true) await authProvider.signOut();
+              if (confirmed == true && context.mounted) {
+                await authProvider.signOut();
+                if (context.mounted) {
+                  context.replace('/login');
+                }
+              }
             },
           ),
         ],

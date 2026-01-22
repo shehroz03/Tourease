@@ -90,7 +90,7 @@ class AdminToursScreen extends StatelessWidget {
           ),
           _buildSummaryItem(
             'Revenue',
-            '\$${NumberFormat.compact().format(totalRevenue)}',
+            'Rs. ${NumberFormat.compact().format(totalRevenue)}',
             Icons.payments_outlined,
           ),
         ],
@@ -218,7 +218,7 @@ class _TourAdminCard extends StatelessWidget {
               children: [
                 _buildInfoBlock(
                   'Price',
-                  '\$${tour.price.toStringAsFixed(0)}',
+                  'Rs. ${tour.price.toStringAsFixed(0)}',
                   Icons.sell_outlined,
                 ),
                 const Spacer(),

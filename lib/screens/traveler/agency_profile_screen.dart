@@ -567,7 +567,7 @@ class _AgencyProfileScreenState extends State<AgencyProfileScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                '\$${tour.price.toStringAsFixed(0)}',
+                                'Rs. ${tour.price.toStringAsFixed(0)}',
                                 style: const TextStyle(
                                   color: Colors.blue,
                                   fontWeight: FontWeight.bold,

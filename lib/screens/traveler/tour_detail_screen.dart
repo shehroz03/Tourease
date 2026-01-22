@@ -577,7 +577,7 @@ class _TourDetailScreenState extends State<TourDetailScreen> {
                   ),
                 ),
                 Text(
-                  '\$${(_tour!.price * _selectedSeats).toStringAsFixed(0)}',
+                  'Rs. ${(_tour!.price * _selectedSeats).toStringAsFixed(0)}',
                   style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w900,

@@ -192,7 +192,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     }
 
     // Money formatter
-    final currencyFormat = NumberFormat.currency(symbol: '\$');
+    final currencyFormat = NumberFormat.currency(symbol: 'PKR ', decimalDigits: 0);
 
     return Scaffold(
       appBar: AppBar(

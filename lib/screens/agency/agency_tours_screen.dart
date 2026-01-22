@@ -242,7 +242,7 @@ class _TourManagementCard extends StatelessWidget {
                           ),
                           _buildInfoItem(
                             'Price',
-                            '\$${tour.price.toStringAsFixed(0)}',
+                            'Rs. ${tour.price.toStringAsFixed(0)}',
                             Icons.attach_money,
                           ),
                           _buildInfoItem(

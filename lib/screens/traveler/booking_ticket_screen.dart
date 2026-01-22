@@ -290,7 +290,7 @@ class _BookingTicketScreenState extends State<BookingTicketScreen> {
                 _buildSectionHeader('PAYMENT'),
                 _buildDetailRow(
                   'Total Amount',
-                  '\$${_booking!.totalPrice.toStringAsFixed(2)}',
+                  'Rs. ${_booking!.totalPrice.toStringAsFixed(2)}',
                   isBold: true,
                 ),
                 _buildRow(

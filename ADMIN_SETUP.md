@@ -67,3 +67,31 @@ After setup, your admin account will look like:
 - The admin login screen will reject non-admin accounts
 - Make sure both Firebase Auth user and Firestore document exist
 
+## Build and Locate APK
+
+After setting up your admin account, you might want to build the app and locate the APK file:
+
+1. Connect your device or start an emulator
+2. Run the following command in your project directory:
+
+```bash
+flutter build apk --release
+```
+
+3. Once the build is complete, locate the APK at:
+
+```
+e:\Flutter-Architect\Flutter-Architect\build\app\outputs\flutter-apk\app-release.apk
+```
+
+4. Install the APK on your device/emulator
+5. Open the app and log in with your admin credentials
+
+## Troubleshooting Common Issues
+
+- **Cannot login as admin**: Ensure the user is created in both Firebase Auth and Firestore with the correct `role` and `status`.
+- **Firestore permissions error**: Check Firestore rules to ensure admins have access.
+- **App crashes on startup**: Verify the APK is correctly installed and matches the app's Firebase project.
+
+For further assistance, consult the Firebase documentation or seek help from a developer familiar with the project.
+

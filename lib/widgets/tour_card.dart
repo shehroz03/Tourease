@@ -107,7 +107,7 @@ class TourCard extends StatelessWidget {
                           ],
                         ),
                         child: Text(
-                          '\$${tour.price.toStringAsFixed(0)}',
+                          'Rs. ${tour.price.toStringAsFixed(0)}',
                           style: const TextStyle(
                             fontWeight: FontWeight.w900,
                             fontSize: 16,
